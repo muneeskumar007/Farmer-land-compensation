@@ -1,0 +1,314 @@
+{
+  "info": {
+    "_postman_id": "b61b2d83-5b1e-4a88-b1c3-5e6a1a0f8b10",
+    "name": "Land Compensation System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.collectionVariables.set('base_url', 'http://localhost:3000');"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" },
+    { "key": "farmer_access_token", "value": "" },
+    { "key": "officer_access_token", "value": "" },
+    { "key": "admin_access_token", "value": "" },
+    { "key": "case_id", "value": "" },
+    { "key": "officer_id", "value": "" },
+    { "key": "farmer_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Register Farmer",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.data && json.data.tokens) {",
+              "  pm.collectionVariables.set('access_token', json.data.tokens.accessToken);",
+              "  pm.collectionVariables.set('refresh_token', json.data.tokens.refreshToken);",
+              "  if (json.data.user && json.data.user.role) {",
+              "    pm.collectionVariables.set(`${json.data.user.role}_access_token`, json.data.tokens.accessToken);",
+              "    if (json.data.user.role === 'farmer') pm.collectionVariables.set('farmer_id', json.data.user.id);",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Ravi Kumar\",\n  \"email\": \"ravi.farmer@example.com\",\n  \"password\": \"StrongPass1!\",\n  \"role\": \"farmer\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Register Officer",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.data && json.data.tokens) {",
+              "  pm.collectionVariables.set('access_token', json.data.tokens.accessToken);",
+              "  pm.collectionVariables.set('refresh_token', json.data.tokens.refreshToken);",
+              "  if (json.data.user && json.data.user.role) {",
+              "    pm.collectionVariables.set(`${json.data.user.role}_access_token`, json.data.tokens.accessToken);",
+              "    if (json.data.user.role === 'officer') pm.collectionVariables.set('officer_id', json.data.user.id);",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Priya Singh\",\n  \"email\": \"priya.officer@example.com\",\n  \"password\": \"StrongPass1!\",\n  \"role\": \"officer\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Login Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.data && json.data.tokens) {",
+              "  pm.collectionVariables.set('access_token', json.data.tokens.accessToken);",
+              "  pm.collectionVariables.set('refresh_token', json.data.tokens.refreshToken);",
+              "  if (json.data.user && json.data.user.role) {",
+              "    pm.collectionVariables.set(`${json.data.user.role}_access_token`, json.data.tokens.accessToken);",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"ChangeMe123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Create Case",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.data && json.data.id) {",
+              "  pm.collectionVariables.set('case_id', json.data.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{farmer_access_token}}" }
+        ],
+        "url": "{{base_url}}/cases",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"acquisition_type\": \"highway\",\n  \"urgency_level\": \"high\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Submit Case",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{farmer_access_token}}" }],
+        "url": "{{base_url}}/cases/{{case_id}}/submit"
+      }
+    },
+    {
+      "name": "Assign Officer",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{admin_access_token}}" }
+        ],
+        "url": "{{base_url}}/cases/{{case_id}}/assign",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"officer_id\": \"{{officer_id}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Add Land Details",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{officer_access_token}}" }
+        ],
+        "url": "{{base_url}}/cases/{{case_id}}/land-details",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"state\": \"Maharashtra\",\n  \"district\": \"Pune\",\n  \"taluk\": \"Haveli\",\n  \"village\": \"Kondhwa\",\n  \"pincode\": \"411048\",\n  \"latitude\": 18.457,\n  \"longitude\": 73.889,\n  \"land_area_acres\": 12.5,\n  \"gis_area_acres\": 11.9,\n  \"land_type\": \"agricultural\",\n  \"soil_type\": \"black\",\n  \"irrigation_type\": \"canal\",\n  \"water_availability_score\": 8,\n  \"crop_type\": \"paddy\",\n  \"crop_yield_per_acre\": 23.4,\n  \"season\": \"kharif\",\n  \"distance_to_road_km\": 2.2,\n  \"distance_to_highway_km\": 15.4,\n  \"distance_to_city_km\": 35.1,\n  \"distance_to_market_km\": 6.8,\n  \"nearby_projects\": \"highway\",\n  \"avg_land_price_per_acre\": 1800000,\n  \"guideline_value\": 1400000,\n  \"previous_compensation\": 1500000\n}"
+        }
+      }
+    },
+    {
+      "name": "Get Land Details",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{officer_access_token}}" }],
+        "url": "{{base_url}}/cases/{{case_id}}/land-details"
+      }
+    },
+    {
+      "name": "Calculate Compensation",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{officer_access_token}}" }
+        ],
+        "url": "{{base_url}}/compensation/calculate",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"case_id\": \"{{case_id}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Predict Compensation",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{officer_access_token}}" }
+        ],
+        "url": "{{base_url}}/compensation/predict",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"case_id\": \"{{case_id}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Get Compensation",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{officer_access_token}}" }],
+        "url": "{{base_url}}/cases/{{case_id}}/compensation"
+      }
+    },
+    {
+      "name": "Approve Case",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{officer_access_token}}" }
+        ],
+        "url": "{{base_url}}/cases/{{case_id}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"final_value\": 47200000,\n  \"notes\": \"Approved after review.\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Submit To Authority",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{officer_access_token}}" }],
+        "url": "{{base_url}}/cases/{{case_id}}/submit-to-authority"
+      }
+    },
+    {
+      "name": "Get Case By ID",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{farmer_access_token}}" }],
+        "url": "{{base_url}}/cases/{{case_id}}"
+      }
+    },
+    {
+      "name": "Get Cases (Paginated)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{officer_access_token}}" }],
+        "url": "{{base_url}}/cases?page=1&limit=20&status=submitted"
+      }
+    },
+    {
+      "name": "Reject Case (Use Different Case)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{officer_access_token}}" }
+        ],
+        "url": "{{base_url}}/cases/{{case_id}}/reject",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"Missing GIS verification.\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/auth/refresh",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/auth/logout",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+        }
+      }
+    }
+  ]
+}

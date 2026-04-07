@@ -1,0 +1,82 @@
+[
+  {
+    "feature": "land_area_acres",
+    "importance": 0.2580396577584716
+  },
+  {
+    "feature": "avg_land_price_per_acre",
+    "importance": 0.20353099621758913
+  },
+  {
+    "feature": "guideline_value",
+    "importance": 0.16692658640703734
+  },
+  {
+    "feature": "previous_compensation",
+    "importance": 0.09943421848537982
+  },
+  {
+    "feature": "distance_to_city_km",
+    "importance": 0.045761667398940435
+  },
+  {
+    "feature": "state_Maharashtra",
+    "importance": 0.020756719012000588
+  },
+  {
+    "feature": "state_Madhya Pradesh",
+    "importance": 0.014057660806325804
+  },
+  {
+    "feature": "distance_to_highway_km",
+    "importance": 0.014040150082793261
+  },
+  {
+    "feature": "distance_to_road_km",
+    "importance": 0.012920676854285756
+  },
+  {
+    "feature": "crop_yield_per_acre",
+    "importance": 0.01249304154163748
+  },
+  {
+    "feature": "distance_to_market_km",
+    "importance": 0.012203210593552062
+  },
+  {
+    "feature": "state_Rajasthan",
+    "importance": 0.009667745883842215
+  },
+  {
+    "feature": "state_Karnataka",
+    "importance": 0.009046085590197515
+  },
+  {
+    "feature": "water_availability_score",
+    "importance": 0.007629916966920057
+  },
+  {
+    "feature": "state_Punjab",
+    "importance": 0.006359094823808843
+  },
+  {
+    "feature": "district_Kolhapur",
+    "importance": 0.005211691184336752
+  },
+  {
+    "feature": "state_Uttar Pradesh",
+    "importance": 0.004196359259895814
+  },
+  {
+    "feature": "district_Nagpur",
+    "importance": 0.003972076608154017
+  },
+  {
+    "feature": "district_Aurangabad",
+    "importance": 0.0030224343078339914
+  },
+  {
+    "feature": "district_Pune",
+    "importance": 0.0022656996609063513
+  }
+]
