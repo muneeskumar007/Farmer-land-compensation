@@ -196,6 +196,7 @@ def feature_importance():
 
 
 @app.post("/predict", response_model=PredictionResponse)
+@app.post("/api/predict", response_model=PredictionResponse)
 def predict(payload: PredictionRequest):
     try:
         _ensure_model_loaded()

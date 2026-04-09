@@ -1,17 +1,19 @@
-const { Pool } = require('pg');
+const mongoose = require('mongoose');
 const logger = require('../utils/logger');
-const { DATABASE_URL } = require('./env');
+const { MONGODB_URI } = require('./env');
 
-const pool = new Pool({
-  connectionString: DATABASE_URL,
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+let isConnected = false;
 
-async function testConnection() {
+async function connectDB() {
+  if (isConnected) {
+    return;
+  }
+
   try {
-    await pool.query('SELECT 1');
+    await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    isConnected = true;
     logger.info('Database connection established');
   } catch (error) {
     logger.error({ err: error }, 'Database connection failed');
@@ -19,27 +21,17 @@ async function testConnection() {
   }
 }
 
-testConnection();
-
-async function query(text, params) {
-  const start = Date.now();
-  try {
-    const result = await pool.query(text, params);
-    const duration = Date.now() - start;
-    if (duration > 500) {
-      logger.warn({ duration, text }, 'Slow query detected');
-    }
-    return result;
-  } catch (error) {
-    const duration = Date.now() - start;
-    if (duration > 500) {
-      logger.warn({ duration, text }, 'Slow query detected');
-    }
-    throw error;
+async function disconnectDB() {
+  if (!isConnected) {
+    return;
   }
+
+  await mongoose.disconnect();
+  isConnected = false;
 }
 
 module.exports = {
-  pool,
-  query,
+  mongoose,
+  connectDB,
+  disconnectDB,
 };

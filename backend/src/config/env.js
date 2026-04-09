@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const requiredVars = [
-  'DATABASE_URL',
+  'MONGODB_URI',
   'JWT_ACCESS_SECRET',
   'JWT_REFRESH_SECRET',
   'ML_SERVICE_URL',
@@ -21,7 +21,7 @@ if (missing.length > 0) {
 }
 
 module.exports = {
-  DATABASE_URL: process.env.DATABASE_URL,
+  MONGODB_URI: process.env.MONGODB_URI,
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
   ML_SERVICE_URL: process.env.ML_SERVICE_URL,

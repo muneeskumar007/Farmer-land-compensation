@@ -9,7 +9,7 @@ const router = express.Router();
 router.post(
   '/:id/submit',
   requireRole('farmer'),
-  [param('id').isUUID()],
+  [param('id').isMongoId()],
   validate,
   controller.submitCase
 );
@@ -18,7 +18,7 @@ router.post(
   '/:id/approve',
   requireRole('officer', 'admin'),
   [
-    param('id').isUUID(),
+    param('id').isMongoId(),
     body('final_value').isFloat({ gt: 0 }),
     body('notes').optional().isString().isLength({ max: 500 }),
   ],
@@ -29,7 +29,7 @@ router.post(
 router.post(
   '/:id/reject',
   requireRole('officer', 'admin'),
-  [param('id').isUUID(), body('reason').notEmpty().isLength({ max: 500 })],
+  [param('id').isMongoId(), body('reason').notEmpty().isLength({ max: 500 })],
   validate,
   controller.rejectCase
 );
@@ -37,7 +37,7 @@ router.post(
 router.post(
   '/:id/assign',
   requireRole('admin'),
-  [param('id').isUUID(), body('officer_id').isUUID()],
+  [param('id').isMongoId(), body('officer_id').isMongoId()],
   validate,
   controller.assignCase
 );
@@ -45,7 +45,7 @@ router.post(
 router.post(
   '/:id/submit-to-authority',
   requireRole('officer', 'admin'),
-  [param('id').isUUID()],
+  [param('id').isMongoId()],
   validate,
   controller.submitToAuthority
 );

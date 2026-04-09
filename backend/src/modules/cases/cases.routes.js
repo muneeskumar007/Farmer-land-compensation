@@ -12,7 +12,7 @@ router.post(
   [
     body('acquisition_type').notEmpty().isLength({ max: 50 }),
     body('urgency_level').isIn(['low', 'medium', 'high', 'critical']),
-    body('farmer_id').optional().isUUID(),
+    body('farmer_id').optional().isMongoId(),
   ],
   validate,
   controller.createCase
@@ -42,7 +42,7 @@ router.get(
 router.get(
   '/:id',
   requireRole('farmer', 'officer', 'admin'),
-  [param('id').isUUID()],
+  [param('id').isMongoId()],
   validate,
   controller.getCaseById
 );

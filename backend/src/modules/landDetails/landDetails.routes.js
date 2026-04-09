@@ -10,7 +10,7 @@ router.post(
   '/:id/land-details',
   requireRole('officer', 'admin'),
   [
-    param('id').isUUID(),
+    param('id').isMongoId(),
     body('state').notEmpty(),
     body('district').notEmpty(),
     body('taluk').notEmpty(),
@@ -43,7 +43,7 @@ router.post(
 router.get(
   '/:id/land-details',
   requireRole('farmer', 'officer', 'admin'),
-  [param('id').isUUID()],
+  [param('id').isMongoId()],
   validate,
   controller.getLandDetails
 );

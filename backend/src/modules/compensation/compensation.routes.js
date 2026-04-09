@@ -9,7 +9,7 @@ const router = express.Router();
 router.post(
   '/compensation/calculate',
   requireRole('officer', 'admin'),
-  [body('case_id').isUUID()],
+  [body('case_id').isMongoId()],
   validate,
   controller.calculateCompensation
 );
@@ -17,7 +17,7 @@ router.post(
 router.post(
   '/compensation/predict',
   requireRole('officer', 'admin'),
-  [body('case_id').isUUID()],
+  [body('case_id').isMongoId()],
   validate,
   controller.predictCompensation
 );
@@ -25,7 +25,7 @@ router.post(
 router.get(
   '/cases/:id/compensation',
   requireRole('farmer', 'officer', 'admin'),
-  [param('id').isUUID()],
+  [param('id').isMongoId()],
   validate,
   controller.getCompensation
 );

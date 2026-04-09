@@ -67,12 +67,12 @@ async function calculateCompensation(req, res, next) {
         multiplier_basis:
           Number(details.distance_to_city_km) > 50
             ? 'rural (>50km from city)'
-            : 'urban (≤50km from city)',
+            : 'urban (<=50km from city)',
         solatium_per_acre,
         land_area_acres,
         calculated_value,
       },
-      statutory_basis: 'RFCTLARR Act 2013, Sections 26–30',
+      statutory_basis: 'RFCTLARR Act 2013, Sections 26-30',
     };
 
     return apiResponse.success(res, response, 200, {

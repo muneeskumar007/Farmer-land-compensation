@@ -6,6 +6,7 @@ const casesRoutes = require('./modules/cases/cases.routes');
 const landDetailsRoutes = require('./modules/landDetails/landDetails.routes');
 const compensationRoutes = require('./modules/compensation/compensation.routes');
 const workflowRoutes = require('./modules/workflow/workflow.routes');
+const apiIntegrationRoutes = require('./modules/apiIntegration/apiIntegration.routes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -22,6 +23,7 @@ app.use('/auth', authRoutes);
 app.use('/cases', auth, casesRoutes);
 app.use('/cases', auth, landDetailsRoutes);
 app.use('/cases', auth, workflowRoutes);
+app.use('/api', auth, apiIntegrationRoutes);
 app.use(auth, compensationRoutes);
 
 app.use(errorHandler);

@@ -1,15 +1,14 @@
 const argon2 = require('argon2');
 const logger = require('./src/utils/logger');
-const { query, pool } = require('./src/config/db');
+const { connectDB, disconnectDB } = require('./src/config/db');
+const { User } = require('./src/models');
 const { ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD } = require('./src/config/env');
 
 async function seedAdmin() {
+  await connectDB();
   try {
-    const existing = await query(
-      'SELECT id FROM users WHERE email = $1 LIMIT 1',
-      [ADMIN_EMAIL]
-    );
-    if (existing.rowCount > 0) {
+    const existing = await User.exists({ email: ADMIN_EMAIL });
+    if (existing) {
       logger.info('Admin user already exists');
       return;
     }
@@ -18,17 +17,18 @@ async function seedAdmin() {
       type: argon2.argon2id,
     });
 
-    await query(
-      `INSERT INTO users (name, email, password_hash, role)
-       VALUES ($1, $2, $3, 'admin')`,
-      [ADMIN_NAME, ADMIN_EMAIL, passwordHash]
-    );
+    await User.create({
+      name: ADMIN_NAME,
+      email: ADMIN_EMAIL,
+      password_hash: passwordHash,
+      role: 'admin',
+    });
 
     logger.info('Admin user created');
   } catch (error) {
     logger.error({ err: error }, 'Admin seed failed');
   } finally {
-    await pool.end();
+    await disconnectDB();
   }
 }
 

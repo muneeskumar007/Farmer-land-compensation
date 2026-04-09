@@ -12,12 +12,16 @@ function errorHandler(err, req, res, next) {
     'Unhandled error'
   );
 
-  if (err.code === '23505') {
+  if (err && err.code === 11000) {
     return apiResponse.error(res, 'Conflict', 409);
   }
 
-  if (err.code === '23503') {
-    return apiResponse.error(res, 'Invalid reference', 400);
+  if (err && err.name === 'ValidationError') {
+    return apiResponse.error(res, 'Validation error', 400, err.errors);
+  }
+
+  if (err && err.name === 'CastError') {
+    return apiResponse.error(res, 'Invalid identifier', 400);
   }
 
   const message = NODE_ENV === 'production' ? 'Internal server error' : err.message;

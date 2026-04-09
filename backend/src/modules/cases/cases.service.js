@@ -1,67 +1,60 @@
-const { query } = require('../../config/db');
+const { LandCase } = require('../../models');
+
+function formatCase(doc) {
+  return {
+    id: doc._id.toString(),
+    farmer_id: doc.farmer_id ? doc.farmer_id.toString() : null,
+    officer_id: doc.officer_id ? doc.officer_id.toString() : null,
+    status: doc.status,
+    acquisition_type: doc.acquisition_type,
+    urgency_level: doc.urgency_level,
+    created_at: doc.created_at,
+    updated_at: doc.updated_at,
+  };
+}
 
 async function createCase(farmerId, acquisitionType, urgencyLevel) {
-  const result = await query(
-    `INSERT INTO land_cases (farmer_id, acquisition_type, urgency_level)
-     VALUES ($1, $2, $3)
-     RETURNING id, farmer_id, officer_id, status, acquisition_type, urgency_level, created_at, updated_at`,
-    [farmerId, acquisitionType, urgencyLevel]
-  );
-  return result.rows[0];
+  const created = await LandCase.create({
+    farmer_id: farmerId,
+    acquisition_type: acquisitionType,
+    urgency_level: urgencyLevel,
+  });
+  return formatCase(created);
 }
 
 async function getCaseById(caseId, requestingUser) {
-  const result = await query(
-    `SELECT id, farmer_id, officer_id, status, acquisition_type, urgency_level, created_at, updated_at
-     FROM land_cases
-     WHERE id = $1`,
-    [caseId]
-  );
-  const row = result.rows[0];
-  if (!row) {
+  const doc = await LandCase.findById(caseId);
+  if (!doc) {
     return null;
   }
-  if (requestingUser.role === 'farmer' && row.farmer_id !== requestingUser.sub) {
+  if (
+    requestingUser.role === 'farmer' &&
+    doc.farmer_id &&
+    doc.farmer_id.toString() !== requestingUser.sub
+  ) {
     const err = new Error('Forbidden');
     err.code = 'FORBIDDEN';
     throw err;
   }
-  return row;
+  return formatCase(doc);
 }
 
 async function getCases(filters, page, limit) {
   const offset = (page - 1) * limit;
-  const values = [];
-  const where = [];
-
+  const filterQuery = {};
   if (filters.status) {
-    values.push(filters.status);
-    where.push(`status = $${values.length}`);
+    filterQuery.status = filters.status;
   }
 
-  const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : '';
-
-  const totalResult = await query(
-    `SELECT COUNT(*)::int AS total FROM land_cases ${whereClause}`,
-    values
-  );
-  const total = totalResult.rows[0].total;
-
-  values.push(limit);
-  values.push(offset);
-
-  const dataResult = await query(
-    `SELECT id, farmer_id, officer_id, status, acquisition_type, urgency_level, created_at, updated_at
-     FROM land_cases
-     ${whereClause}
-     ORDER BY created_at DESC
-     LIMIT $${values.length - 1} OFFSET $${values.length}`,
-    values
-  );
+  const total = await LandCase.countDocuments(filterQuery);
+  const data = await LandCase.find(filterQuery)
+    .sort({ created_at: -1 })
+    .skip(offset)
+    .limit(limit);
 
   const pages = Math.max(1, Math.ceil(total / limit));
   return {
-    data: dataResult.rows,
+    data: data.map(formatCase),
     total,
     page,
     pages,
